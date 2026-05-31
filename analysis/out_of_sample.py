@@ -155,7 +155,9 @@ def _load_market_daily(market: str, cutoff: pd.Timestamp) -> tuple[pd.DataFrame,
     idx_raw = pd.read_csv(dp / "index.csv", index_col=0, parse_dates=True).sort_index()
     idx_raw = idx_raw[idx_raw.index <= cutoff]
     df_daily = idx_raw[["Close"]].copy().rename(columns={"Close": market})
-    df_daily["returns"] = df_daily[market].pct_change()
+    df_daily["returns"] = (df_daily[market].pct_change()
+                              if not df_daily.empty
+                              else pd.Series(dtype=float, index=df_daily.index))
 
     hy   = pd.read_csv(dp / "hy_spread.csv",         index_col=0, parse_dates=True).iloc[:, 0]
     yc   = pd.read_csv(dp / "yield_curve.csv",       index_col=0, parse_dates=True).iloc[:, 0]
@@ -260,6 +262,9 @@ def _build_df_at_freq(market, df_daily, raws, freq, pandas_freq) -> pd.DataFrame
 
 def sweep_market_pre2021(market: str) -> pd.DataFrame:
     df_daily, raws = _load_market_daily(market, cutoff=CUTOFF)
+    if df_daily.empty:
+        print(f"    skipping {market}: no pre-2021 history")
+        return pd.DataFrame(columns=["indicator", "p_value"])
     rows = []
     for dd in DRAWDOWN_THRESHOLDS:
         for horizon, freq in EXPERIMENT:

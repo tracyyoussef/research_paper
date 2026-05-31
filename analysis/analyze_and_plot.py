@@ -160,7 +160,7 @@ mpl.rcParams.update({
 # ───────────────────────────────────────────────────────────────────────────
 
 def fig_sig5_ranking(df: pd.DataFrame, out: Path):
-    """Headline figure — share of configurations significant at the 5%
+    """ Share of configurations significant at the 5%
     level, one bar per indicator, coloured by family and sorted from
     most to least frequently significant."""
     g = (df.groupby("indicator")
@@ -193,8 +193,8 @@ def fig_sig5_ranking(df: pd.DataFrame, out: Path):
 
 
 def fig_global_ranking(df: pd.DataFrame, out: Path):
-    """Figure 1 — Global ranking by *median* p-value.
-       Vertical bar chart (one bar per indicator) coloured by family."""
+    """Global ranking by *median* p-value."""
+    #    Vertical bar chart (one bar per indicator) coloured by family.
     g = (df.groupby("indicator")
            .agg(median_p=("p_value", "median"),
                 sig5=("sig5", "mean"))
@@ -216,7 +216,7 @@ def fig_global_ranking(df: pd.DataFrame, out: Path):
                 ha="center", fontsize=7.5)
     ax.set_xticklabels(g["display"], rotation=45, ha="right", fontsize=9)
     ax.set_ylabel("Median $p$-value")
-    ax.set_title("Figure 1 — Global ranking of crisis-prediction indicators "
+    ax.set_title("Global ranking of crisis-prediction indicators "
                  "(median $p$-value; lower $=$ stronger)")
     handles = [plt.Rectangle((0,0),1,1, color=c, ec="black", lw=0.4)
                for c in FAMILY_COLOURS.values()]
@@ -229,9 +229,7 @@ def fig_global_ranking(df: pd.DataFrame, out: Path):
 
 
 def fig_family_pooled(df: pd.DataFrame, out: Path):
-    """Figure 2 — Mean vs Median p-value per family, vertical bars.
-       This is the figure cited to justify the mean-to-median switch:
-       the gap between mean and median exposes the right-skew."""
+    """ Mean vs Median p-value per family, vertical bars."""
     fam_order = ["Volatility & Tail-Risk", "Systemic-Risk & Contagion",
                  "Valuation & Trend", "Credit & Term-Structure",
                  "Macro & Real-Activity"]
@@ -250,7 +248,7 @@ def fig_family_pooled(df: pd.DataFrame, out: Path):
     ax.set_xticks(x)
     ax.set_xticklabels([s.replace(" & ", "\n& ") for s in g.index], fontsize=9)
     ax.set_ylabel("$p$-value")
-    ax.set_title("Figure 2 — Mean vs Median $p$-value by indicator family")
+    ax.set_title("Mean vs Median $p$-value by indicator family")
     ax.legend(fontsize=9)
     for i, v in enumerate(g["mean_p"]):
         ax.text(i - w/2, v + 0.005, f"{v:.3f}", ha="center", fontsize=8)
@@ -262,8 +260,7 @@ def fig_family_pooled(df: pd.DataFrame, out: Path):
 
 
 def fig_threshold_pattern(df: pd.DataFrame, out: Path):
-    """Figure 3 — Median p-value by family across drawdown thresholds.
-       Axis is *not* inverted; lower y = stronger evidence."""
+    """ Median p-value by family across drawdown thresholds."""
     g = (df.groupby(["family", "drawdown_threshold"])["p_value"].median()
            .unstack("drawdown_threshold"))
     fig, ax = plt.subplots(figsize=(9.0, 4.6))
@@ -276,7 +273,7 @@ def fig_threshold_pattern(df: pd.DataFrame, out: Path):
                label="$p = 0.05$")
     ax.set_xlabel("Drawdown threshold $\\delta$ (%)")
     ax.set_ylabel("Median $p$-value")
-    ax.set_title("Figure 3 — Median $p$-value by family and drawdown threshold")
+    ax.set_title(" Median $p$-value by family and drawdown threshold")
     ax.legend(fontsize=8.5, loc="upper left")
     fig.tight_layout()
     fig.savefig(out)
@@ -284,14 +281,14 @@ def fig_threshold_pattern(df: pd.DataFrame, out: Path):
 
 
 def fig_horizon_heatmap(df: pd.DataFrame, out: Path):
-    """Horizon x indicator heatmap over ALL indicators.
-
-    Cells show the share of configurations significant at the 5%
-    level. To keep colour semantics homogeneous across every heatmap
-    in the paper (green = strong predictor, red = weak predictor) we
-    plot ``1 - sig5`` against the shared ``HEATMAP_CMAP``. Indicators
-    are ordered by their pooled median p-value (strongest at top).
+    """Horizon x indicator heatmap over all indicators.
     """
+    # Cells show the share of configurations significant at the 5%
+    # level. To keep colour semantics homogeneous across every heatmap
+    # in the paper (green = strong predictor, red = weak predictor) we
+    # plot ``1 - sig5`` against the shared ``HEATMAP_CMAP``. Indicators
+    # are ordered by their pooled median p-value (strongest at top).
+
     rank = df.groupby("indicator")["p_value"].median().sort_values()
     order = rank.index.tolist()
     g = (df.groupby(["indicator", "config"])["sig5"]
@@ -327,7 +324,7 @@ def fig_horizon_heatmap(df: pd.DataFrame, out: Path):
 
 
 def fig_market_comparison(df: pd.DataFrame, out: Path):
-    """Figure 5 — Cross-market comparison by *median* p-value, vertical bars."""
+    """Cross-market comparison by *median* p-value, vertical bars."""
     g = df.groupby("market")["p_value"].median().sort_values()
     fig, ax = plt.subplots(figsize=(9.5, 4.6))
     bars = ax.bar(g.index, g.values, color="#3B6FB6",
@@ -338,7 +335,7 @@ def fig_market_comparison(df: pd.DataFrame, out: Path):
                 f"{val:.3f}", ha="center", fontsize=8.5)
     ax.axhline(0.05, color="black", lw=1.0, ls="--", alpha=0.7, label="$p = 0.05$")
     ax.set_ylabel("Median $p$-value")
-    ax.set_title("Figure 5 — Cross-market comparison by median $p$-value "
+    ax.set_title(" Cross-market comparison by median $p$-value "
                  "(lower $=$ more predictable)")
     ax.legend(fontsize=8.5, loc="upper left")
     fig.tight_layout()
@@ -347,7 +344,7 @@ def fig_market_comparison(df: pd.DataFrame, out: Path):
 
 
 def fig_market_heatmap(df: pd.DataFrame, market: str, out: Path):
-    """Per-market heatmap of median p-value, with shared colormap."""
+    """Per-market heatmap of median p-value."""
     sub = df[df["market"] == market]
     g = (sub.groupby(["indicator", "drawdown_threshold"])["p_value"].median()
             .unstack("drawdown_threshold")
@@ -377,9 +374,7 @@ def fig_market_heatmap(df: pd.DataFrame, market: str, out: Path):
 
 
 def fig_indicator_market_heatmap(df: pd.DataFrame, out: Path):
-    """Indicator x market heatmap of median p-value.
-       Uses the same heatmap colormap as the per-market versions and the
-       Figure 7 significance map so the section reads as one visual story."""
+    """Indicator x market heatmap of median p-value."""
     g = (df.groupby(["market", "indicator"])["p_value"].median()
            .unstack("indicator")
            .reindex(columns=INDICATOR_ORDER))
@@ -411,9 +406,9 @@ def fig_indicator_market_heatmap(df: pd.DataFrame, out: Path):
 
 
 def fig_significance_heatmap(df: pd.DataFrame, out: Path):
-    """Figure 7 — Indicator × market significance share at the 5 % level.
-       Uses the same colormap as the median-p heatmap so Figures 6 and 7
-       form a visually-consistent pair, as requested."""
+    """Indicator × market significance share at the 5 % level."""
+    #    Uses the same colormap as the median-p heatmap so Figures 6 and 7
+    #    form a visually-consistent pair, as requested.
     g = (df.groupby(["market", "indicator"])["sig5"].mean()
            .unstack("indicator")
            .reindex(columns=INDICATOR_ORDER))
@@ -444,7 +439,7 @@ def fig_significance_heatmap(df: pd.DataFrame, out: Path):
                       "(green = high share)", shrink=0.9)
     cb.set_ticks([0, 0.2, 0.5, 0.8, 1.0])
     cb.set_ticklabels(["100%", "80%", "50%", "20%", "0%"])
-    ax.set_title("Figure 7 — Share of configurations significant at 5% "
+    ax.set_title("Share of configurations significant at 5% "
                  "by indicator and market")
     fig.tight_layout()
     fig.savefig(out)

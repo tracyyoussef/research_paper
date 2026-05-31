@@ -64,7 +64,7 @@ def main():
                 color=cmap(j / max(len(ks) - 1, 1)),
                 label=f"$k = {k}$")
     ax.set_ylabel("Hill tail index $\\hat\\xi^{\\mathrm{Hill}}$")
-    ax.set_title("Figure A1 - Hill-tail estimator on the S\\&P 500 "
+    ax.set_title("Hill-tail estimator on the S\\&P 500 "
                  "for $k \\in \\{5, 8, 12, 16, 20, 25, 30\\}$ "
                  "(production: $k = 12$)")
     ax.legend(ncol=4, fontsize=8.5)
@@ -86,7 +86,7 @@ def main():
     ax2.axvline(12, color="red", lw=1.2, ls="--", label="production: $k = 12$")
     ax2.set_xlabel("Order-statistic count $k$")
     ax2.set_ylabel("Hill tail index $\\hat\\xi^{\\mathrm{Hill}}$")
-    ax2.set_title("Figure A2 - Average Hill tail index as a function of $k$")
+    ax2.set_title("Average Hill tail index as a function of $k$")
     ax2.legend(fontsize=8.5)
     ax2.grid(alpha=0.25)
 

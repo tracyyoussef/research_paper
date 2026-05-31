@@ -89,7 +89,7 @@ def main():
             elif freq == "W":
                 rule, periods = "W-FRI", h
             else:
-                rule, periods = "ME", h
+                rule, periods = "M", h
             ret_p = ret.resample(rule).sum().dropna() if freq != "D" else ret
             for dd in DRAWDOWNS:
                 fcum = ret_p.rolling(periods).sum().shift(-periods)
@@ -149,7 +149,7 @@ def main():
                     transform=ax[0].transAxes, ha="center")
         ax[1].axis("off")
 
-    fig.suptitle("Figure A3 — Logit vs Probit robustness: paired regressions on the "
+    fig.suptitle(" Logit vs Probit robustness: paired regressions on the "
                  "same data", y=1.02, fontweight="bold")
     fig.tight_layout()
     fig.savefig(OUT_FIG, dpi=150, bbox_inches="tight")
